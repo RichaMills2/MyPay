@@ -1,0 +1,87 @@
+﻿@model IEnumerable<MyPay.Models.Employee>
+
+@{
+    ViewBag.Title = "Employees";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Employees</h2>
+
+<p>
+    @Html.ActionLink("New Employee", "New", "Employee", null, new { @class = "btn btn-primary" })
+</p>
+
+
+<table id="Employees" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Employee</th>
+            <th>Annual Salary $</th>
+            <th>Super Rate %</th>
+            <th>Delete</th>
+
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts
+{
+<script>
+    $(document).ready(function () {
+
+        var table = $("#Employees").DataTable({
+            ajax: {
+                url: "/api/employees",
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "name",
+                    render: function (data, type, employee) {
+                        return "<a href='/Employee/Edit/" + employee.id + "'>" + employee.name + "</a>";
+                    }
+                },              
+                {
+                    data: "annualSalary"
+                },
+                {
+                    data: "superRate"
+                    
+                },
+                {
+                    data: "id",
+                    render: function (data) {
+                        return "<button class='btn-link js-delete' data-employee-id=" + data + ">Delete</button>"
+                    }
+                }
+
+
+        
+                
+            ]
+        });
+
+        $("#Employees").on("click",".js-delete", function () {
+
+            var button = $(this);
+            
+            bootbox.confirm("Are you sure you want to delete this Employee?", function (result) {
+                if(result)
+                {
+                    $.ajax({
+                        url: "/api/employees/" + button.attr("data-employee-id"),
+                        method: "DELETE",
+                        success: function () {
+                            table.row(button.parents("tr")).remove().draw();
+                            
+                        }
+
+                    });
+                }
+            });
+         
+
+        });
+    });
+</script>
+}

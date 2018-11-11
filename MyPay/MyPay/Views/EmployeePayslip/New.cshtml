@@ -1,0 +1,89 @@
+﻿
+@{
+    ViewBag.Title = "Employee Payslip";
+}
+
+<h2>Employee Payslip</h2>
+
+<form id="Payslipform">
+    <div class="form-group">
+        <label>Employee</label>
+        <div class="tt-container">
+            <input type="Text" id="employee" value="" class="form-control" />
+        </div>
+    </div>
+
+    <button class="btn btn-primary">Calculate</button>
+
+<div id="taxtotals" hidden="hidden">
+    <label>Gross Income</label>
+        <input id="Gross" type="number" disabled="disabled" id="employee" value="" class="form-control"/>
+
+    <label>Income Tax</label>
+    <input id="Tax" type="Text" disabled="disabled" id="employee" value="" class="form-control" />
+
+    <label>Nett Income</label>
+    <input id="Nett" type="Text" disabled="disabled" id="employee" value="" class="form-control" />
+
+    <label>Super</label>
+    <input id="Super" type="Text" disabled="disabled" id="employee" value="" class="form-control" />
+
+    <br />
+    <p>
+        @Html.ActionLink("Close", "Index", "Home", null, new { @class = "btn btn-primary" })
+    </p>
+</div>
+ 
+</form>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            var vm = {};
+
+            var employees = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                //prefetch: '../data/films/post_1960.json',
+                remote: {
+                    url: '/api/employees?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#employee').typeahead({
+                minLength: 3,
+                highlight: true
+            }, {
+                name: 'employees',
+                display: 'name',
+                source: employees
+            }).on("typeahead:select", function (e, employee) {
+                document.getElementById("taxtotals").setAttribute("hidden","");
+                vm.employeeId = employee.id;
+            });
+
+            $("#Payslipform").submit(function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: "/api/taxtables/GetTax/" + vm.employeeId,
+                    method: "GET",
+                    success: function (response) {
+                        document.getElementById("taxtotals").removeAttribute("hidden");
+
+                        $("#Gross").val(response[0]);
+                        $("#Tax").val(response[1]);
+                        $("#Nett").val(response[2]);
+                        $("#Super").val(response[3]);
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,43 @@
+﻿@using MyPay.Models
+@model MyPay.ViewModels.EmployeeViewModel
+
+@{
+    ViewBag.Title = "New";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Employee</h2>
+
+@using (@Html.BeginForm("Save", "Employee"))
+{
+    @Html.ValidationSummary(true,"Please fix the following errors:")
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.Name)
+        @Html.TextBoxFor(m => m.Employee.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Employee.Name)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.AnnualSalary)
+        @Html.TextBoxFor(m => m.Employee.AnnualSalary, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Employee.AnnualSalary)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.SuperRate)
+        @Html.TextBoxFor(m => m.Employee.SuperRate, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Employee.SuperRate)
+    </div>
+
+
+  
+
+    @Html.HiddenFor(m => m.Employee.Id)
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn-primary">Save</button>
+}
+
+@section scripts{ 
+    @Scripts.Render("~/bundles/jqueryval")
+}
